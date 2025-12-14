@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <RootNamespace>DnDCharacterManager.Services</RootNamespace>
+    <AssemblyName>DnDCharacterManager.Services</AssemblyName>
+    <UserSecretsId>dotnet-Services-acdca558-3a11-41ec-b45e-165d38de07fc</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj"/>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.RabbitMq.Consumer\Infrastructure.RabbitMq.Consumer.csproj"/>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.Smtp\Infrastructure.Smtp.csproj"/>
+  </ItemGroup>
+</Project>

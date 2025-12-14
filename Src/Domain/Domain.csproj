@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>DnDCharacterManager.Domain</RootNamespace>
+    <AssemblyName>DnDCharacterManager.Domain</AssemblyName>
+  </PropertyGroup>
+
+</Project>
