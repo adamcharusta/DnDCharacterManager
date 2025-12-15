@@ -11,49 +11,52 @@
 
 <p>This component demonstrates showing data.</p>
 
-<EditForm Model="@Form" OnValidSubmit="Submit" FormName="weatherPerDays">
-    <FluentValidationValidator/>
-    <ValidationSummary/>
-    <div class="mb-3">
-        <label for="days" class="form-label">Days</label>
-        <InputNumber class="form-control"
-                     id="days"
-                     @bind-Value="Form.Days"/>
-    </div>
+<MudPaper Class="pa-4" Elevation="1">
+    <EditForm EditContext="_editContext" OnValidSubmit="Submit">
+        <FluentValidationValidator/>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
-</EditForm>
+        <MudNumericField T="int"
+                         Label="Days"
+                         @bind-Value="Form.Days"
+                         For="@(() => Form.Days)"
+                         Immediate="true"
+                         Variant="Variant.Outlined"/>
+
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Submit
+        </MudButton>
+    </EditForm>
+
+</MudPaper>
 
 <p>Live: @Form.Days</p>
 
-@if (forecasts != null)
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th aria-label="Temperature in Celsius">Temp. (C)</th>
-            <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
-            <th>Summary</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var forecast in forecasts)
-        {
-            <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+<MudTable Items="forecasts" Loading="forecasts == null" LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Date</MudTh>
+        <MudTh>Temp. (C)</MudTh>
+        <MudTh>Temp. (F)</MudTh>
+        <MudTh>Summary</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Date">@context.Date</MudTd>
+        <MudTd DataLabel="Temp. (C)">@context.TemperatureC</MudTd>
+        <MudTd DataLabel="Temp. (F)">@context.TemperatureF</MudTd>
+        <MudTd DataLabel="Summary">@context.Summary</MudTd>
+    </RowTemplate>
+</MudTable>
 
 @code {
     private List<WeatherForecastDto>? forecasts;
+    private EditContext _editContext = default!;
     private GetWeatherForecastsPerDays Form { get; } = new();
+
+    protected override void OnInitialized()
+    {
+        _editContext = new EditContext(Form);
+    }
 
     private async Task Submit()
     {
@@ -63,3 +66,4 @@
     }
 
 }
+

@@ -1,5 +1,6 @@
 using Application;
 using DnDCharacterManager.Web.Components;
+using MudBlazor.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ try
 {
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
+
+    builder.Services.AddMudServices();
 
     builder.Services.AddApplication(builder.Configuration);
 

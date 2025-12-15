@@ -9,9 +9,8 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-<button class="btn btn-secondary" @onclick="SendEmail">Send Email</button>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" @onclick="IncrementCount">Click me</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" @onclick="SendEmail">Send Email</MudButton>
 
 @code {
     private int currentCount;
