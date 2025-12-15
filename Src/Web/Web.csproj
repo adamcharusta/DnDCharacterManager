@@ -11,4 +11,14 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure\Infrastructure.csproj"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Ardalis.GuardClauses"/>
+    <PackageReference Include="Blazored.FluentValidation"/>
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.AspNetCore"/>
+    <PackageReference Include="Serilog.Settings.Configuration"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.Seq"/>
+  </ItemGroup>
+
 </Project>

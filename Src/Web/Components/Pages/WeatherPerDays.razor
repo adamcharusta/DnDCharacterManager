@@ -1,21 +1,32 @@
-﻿@page "/weather"
+﻿@page "/weather-per-days"
 @using Application.WeatherForecasts.Dtos
 @using Application.WeatherForecasts.Queries
-@attribute [StreamRendering]
+@rendermode InteractiveServer
 @inject IMessageBus bus
+
 
 <PageTitle>Weather</PageTitle>
 
 <h1>Weather</h1>
 
 <p>This component demonstrates showing data.</p>
-@if (forecasts == null)
-{
-    <p>
-        <em>Loading...</em>
-    </p>
-}
-else
+
+<EditForm Model="@Form" OnValidSubmit="Submit" FormName="weatherPerDays">
+    <FluentValidationValidator/>
+    <ValidationSummary/>
+    <div class="mb-3">
+        <label for="days" class="form-label">Days</label>
+        <InputNumber class="form-control"
+                     id="days"
+                     @bind-Value="Form.Days"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+<p>Live: @Form.Days</p>
+
+@if (forecasts != null)
 {
     <table class="table">
         <thead>
@@ -42,10 +53,13 @@ else
 
 @code {
     private List<WeatherForecastDto>? forecasts;
+    private GetWeatherForecastsPerDays Form { get; } = new();
 
-    protected override async Task OnInitializedAsync()
+    private async Task Submit()
     {
-        forecasts = await bus.InvokeAsync<List<WeatherForecastDto>>(new GetWeatherForecasts());
+        forecasts = await bus.InvokeAsync<List<WeatherForecastDto>>(
+            Form
+        );
     }
 
 }

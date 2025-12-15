@@ -1,0 +1,40 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    ports:
+      - 1433:1433
+    environment:
+      SA_PASSWORD: "Your_strong_password123"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  rabbitmq:
+    image: rabbitmq:4.2.1-management-alpine
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+  
+  seg:
+    image: datalust/seq:2025.2
+    restart: unless-stopped
+    ports:
+      - 5341:5341
+      - 8080:80
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_PASSWORD: "zaq1@WSX"
+    volumes:
+      - seq_data:/data
+
+volumes:
+  rabbitmq_data:
+  mssql_data:
+  seq_data:

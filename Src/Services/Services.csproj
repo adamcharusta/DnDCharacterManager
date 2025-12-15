@@ -8,11 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting"/>
+    <PackageReference Include="Ardalis.GuardClauses"/>
+    <PackageReference Include="WolverineFx"/>
+    <PackageReference Include="WolverineFx.RabbitMQ"/>
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.Settings.Configuration"/>
+    <PackageReference Include="Serilog.Extensions.Hosting"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.Seq"/>
+    <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq"/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj"/>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.RabbitMq.Consumer\Infrastructure.RabbitMq.Consumer.csproj"/>
     <ProjectReference Include="..\Infrastructure\Infrastructure.Smtp\Infrastructure.Smtp.csproj"/>
   </ItemGroup>
 </Project>

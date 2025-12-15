@@ -1,5 +1,7 @@
 ﻿@page "/counter"
+@using DnDCharacterManager.Contracts.Notifications
 @rendermode InteractiveServer
+@inject IMessageBus bus
 
 <PageTitle>Counter</PageTitle>
 
@@ -9,12 +11,23 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
+<button class="btn btn-secondary" @onclick="SendEmail">Send Email</button>
+
 @code {
-    private int currentCount = 0;
+    private int currentCount;
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    private async Task SendEmail()
+    {
+        await bus.SendAsync(new SendEmail(
+            "test@test.com",
+            "Welcome",
+            "Hello from Wolverine"
+        ));
     }
 
 }
