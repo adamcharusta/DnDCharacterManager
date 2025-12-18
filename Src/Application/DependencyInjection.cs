@@ -14,7 +14,7 @@ using Wolverine.ErrorHandling;
 using Wolverine.FluentValidation;
 using Wolverine.RabbitMQ;
 
-namespace Application;
+namespace DnDCharacterManager.Application;
 
 public static class DependencyInjection
 {

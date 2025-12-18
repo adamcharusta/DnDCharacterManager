@@ -1,8 +1,7 @@
-using System;
 using Domain.Entities;
 using Mapster;
 
-namespace Application.WeatherForecasts.Dtos;
+namespace DnDCharacterManager.Application.WeatherForecasts.Dtos;
 
 public class WeatherForecastDto
 {

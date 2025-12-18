@@ -1,6 +1,6 @@
-using Application;
-using DnDCharacterManager.Web.Components;
-using MudBlazor.Services;
+using DnDCharacterManager.Application;
+using DnDCharacterManager.Web;
+using Infrastructure;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,29 +12,14 @@ builder.Host.UseSerilog((ctx, lc) => lc
 
 try
 {
-    builder.Services.AddRazorComponents()
-        .AddInteractiveServerComponents();
-
-    builder.Services.AddMudServices();
-
-    builder.Services.AddApplication(builder.Configuration);
+    builder.Services
+        .AddInfrastructure(builder.Configuration)
+        .AddApplication(builder.Configuration)
+        .AddWeb();
 
     var app = builder.Build();
 
-    if (!app.Environment.IsDevelopment())
-    {
-        app.UseExceptionHandler("/Error", true);
-        app.UseHsts();
-    }
-
-    app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-    app.UseHttpsRedirection();
-
-    app.UseAntiforgery();
-
-    app.MapStaticAssets();
-    app.MapRazorComponents<App>()
-        .AddInteractiveServerRenderMode();
+    await app.ConfigureWebApplicationAsync();
 
     app.Run();
 }

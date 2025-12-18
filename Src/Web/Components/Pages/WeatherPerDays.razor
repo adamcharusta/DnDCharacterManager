@@ -1,6 +1,8 @@
 ﻿@page "/weather-per-days"
-@using Application.WeatherForecasts.Dtos
-@using Application.WeatherForecasts.Queries
+@using DnDCharacterManager.Application.WeatherForecasts.Dtos
+@using DnDCharacterManager.Application.WeatherForecasts.Queries
+@attribute [Authorize]
+
 @rendermode InteractiveServer
 @inject IMessageBus bus
 

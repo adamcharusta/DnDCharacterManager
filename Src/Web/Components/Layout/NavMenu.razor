@@ -9,5 +9,25 @@
             <MudNavLink Href="/weather">Weather</MudNavLink>
             <MudNavLink Href="/weather-per-days">Weather per days</MudNavLink>
         </MudNavGroup>
+        <MudNavGroup Title="Auth" Expanded="true">
+            <AuthorizeView>
+                <Authorized>
+                    <form method="post"
+                          action="/auth/logout"
+                          data-enhance="false"
+                          style="display:inline">
+                        <AntiforgeryToken/>
+                        <button type="submit" class="mud-button-root mud-button mud-button-filled">
+                            Wyloguj
+                        </button>
+                    </form>
+                </Authorized>
+
+                <NotAuthorized>
+                    <MudNavLink Href="/account/login">Login</MudNavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+            <MudNavLink Href="/account/register">Register</MudNavLink>
+        </MudNavGroup>
     </MudNavMenu>
 </MudPaper>

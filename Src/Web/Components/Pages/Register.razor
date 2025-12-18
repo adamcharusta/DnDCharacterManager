@@ -1,0 +1,23 @@
+@page "/account/register"
+@rendermode InteractiveServer
+@inject NavigationManager Nav
+
+<form method="post" action="/auth/register">
+    <AntiforgeryToken/>
+
+    <input name="Email" value="@model.Email" placeholder="Email"/>
+    <input name="Password" value="@model.Password" type="password" placeholder="Password"/>
+
+    <button type="submit">Register</button>
+</form>
+
+@code {
+    private readonly RegisterModel model = new();
+
+    private class RegisterModel
+    {
+        public string Email { get; } = "";
+        public string Password { get; } = "";
+    }
+
+}

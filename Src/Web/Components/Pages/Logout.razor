@@ -1,0 +1,25 @@
+@page "/account/logout"
+@inject IJSRuntime JS
+
+<h3>Wylogowywanie...</h3>
+
+<form method="post"
+      action="/auth/logout"
+      data-enhance="false"
+      @ref="formRef">
+    <AntiforgeryToken/>
+    <button type="submit">Kliknij jeśli nie przekierowało</button>
+</form>
+
+@code {
+    private ElementReference formRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("submitForm", formRef);
+        }
+    }
+
+}

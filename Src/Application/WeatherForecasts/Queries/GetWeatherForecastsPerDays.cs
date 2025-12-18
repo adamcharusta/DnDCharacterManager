@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Application.WeatherForecasts.Dtos;
+using DnDCharacterManager.Application.WeatherForecasts.Dtos;
 using Domain.Entities;
 using MapsterMapper;
 
-namespace Application.WeatherForecasts.Queries;
+namespace DnDCharacterManager.Application.WeatherForecasts.Queries;
 
 public class GetWeatherForecastsPerDays
 {

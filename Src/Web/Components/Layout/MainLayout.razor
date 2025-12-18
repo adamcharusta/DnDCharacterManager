@@ -12,7 +12,9 @@
         </MudItem>
         <MudItem>
             <MudMainContent>
-                @Body
+                <CascadingAuthenticationState>
+                    @Body
+                </CascadingAuthenticationState>
             </MudMainContent>
         </MudItem>
     </MudGrid>

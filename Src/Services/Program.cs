@@ -1,5 +1,10 @@
+using System;
 using Ardalis.GuardClauses;
 using JasperFx.Core;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Serilog;
 using Wolverine;

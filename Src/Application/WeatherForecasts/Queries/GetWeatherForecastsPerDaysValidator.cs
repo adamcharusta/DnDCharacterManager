@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace Application.WeatherForecasts.Queries;
+namespace DnDCharacterManager.Application.WeatherForecasts.Queries;
 
 public class GetWeatherForecastsPerDaysValidator : AbstractValidator<GetWeatherForecastsPerDays>
 {

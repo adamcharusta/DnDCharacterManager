@@ -6,6 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0"/>
     <PackageVersion Include="AspNetCore.HealthChecks.Rabbitmq" Version="9.0.0"/>
+    <PackageVersion Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0"/>
     <PackageVersion Include="Blazored.FluentValidation" Version="2.2.0"/>
     <PackageVersion Include="bunit" Version="2.2.2"/>
     <PackageVersion Include="FluentAssertions" Version="8.8.0"/>

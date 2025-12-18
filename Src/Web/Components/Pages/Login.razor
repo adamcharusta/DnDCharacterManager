@@ -1,0 +1,46 @@
+@page "/account/login"
+@using Microsoft.AspNetCore.WebUtilities
+@rendermode InteractiveServer
+@inject NavigationManager Nav
+
+@code {
+    private readonly LoginModel model = new();
+
+    private string? ReturnUrl =>
+        QueryHelpers.ParseQuery(new Uri(Nav.Uri).Query)
+            .TryGetValue("ReturnUrl", out var v)
+            ? v.ToString()
+            : null;
+
+    private string? error =>
+        QueryHelpers.ParseQuery(new Uri(Nav.Uri).Query)
+            .TryGetValue("error", out var v)
+            ? v.ToString()
+            : null;
+
+    private class LoginModel
+    {
+        public string Email { get; } = "";
+        public string Password { get; } = "";
+    }
+
+}
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <p class="text-danger">Nieprawidłowy login/hasło</p>
+}
+
+<form method="post" action="/auth/login">
+    <AntiforgeryToken/>
+
+    @if (!string.IsNullOrEmpty(ReturnUrl))
+    {
+        <input type="hidden" name="ReturnUrl" value="@ReturnUrl"/>
+    }
+
+    <input name="Email" value="@model.Email" placeholder="Email"/>
+    <input name="Password" value="@model.Password" type="password" placeholder="Password"/>
+
+    <button type="submit">Login</button>
+</form>
