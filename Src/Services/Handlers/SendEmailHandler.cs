@@ -1,17 +1,18 @@
-using System;
-using System.Threading.Tasks;
 using DnDCharacterManager.Contracts.Notifications;
+using DnDCharacterManager.Infrastructure.Smtp.Templates;
+using Infrastructure.Services;
 
 namespace Services.Handlers;
 
-public static class SendEmailHandler
+public class SendEmailHandler
 {
-    public static Task Handle(SendEmail cmd)
+    public static async Task Handle(SendEmail cmd, IEmailService emailService,
+        ILogger<SendEmailHandler> logger, CancellationToken ct)
     {
-        Console.WriteLine(
-            $"EMAIL → {cmd.To} | {cmd.Subject} | {cmd.Body}"
-        );
+        var model = new EmailTemplate { Subject = cmd.Subject, Body = cmd.Body };
 
-        return Task.CompletedTask;
+        var htmlBody = await model.RenderAsync(ct);
+
+        await emailService.SendEmailAsync(cmd.To, cmd.Subject, htmlBody, null, ct);
     }
 }

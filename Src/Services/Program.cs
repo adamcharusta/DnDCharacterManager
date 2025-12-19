@@ -1,10 +1,7 @@
-using System;
+using System.Reflection;
 using Ardalis.GuardClauses;
+using DnDCharacterManager.Infrastructure.Smtp;
 using JasperFx.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Serilog;
 using Wolverine;
@@ -22,6 +19,7 @@ try
 {
     builder.Logging.ClearProviders();
     builder.Logging.AddSerilog(Log.Logger, true);
+    builder.Services.AddInfrastructureSmtp(builder.Configuration);
 
     var rabbitConnectionString = builder.Configuration.GetConnectionString("RabbitMqConnection");
     Guard.Against.NullOrEmpty(rabbitConnectionString);
@@ -40,6 +38,8 @@ try
 
     builder.Services.AddWolverine(opts =>
     {
+        opts.Discovery.IncludeAssembly(Assembly.GetExecutingAssembly());
+
         opts.UseRabbitMq(rabbitConnectionString)
             .UseListenerConnectionOnly()
             .AutoProvision();
@@ -53,8 +53,7 @@ try
                 500.Milliseconds()
             );
 
-        opts.ListenToRabbitQueue("emails")
-            .DeadLetterQueueing(new DeadLetterQueue("emails-errors"));
+        opts.ListenToRabbitQueue("emails");
     });
 
     var host = builder.Build();
