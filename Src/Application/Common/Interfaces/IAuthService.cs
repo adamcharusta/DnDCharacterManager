@@ -1,6 +1,6 @@
 using Application.Common.Dtos;
 
-namespace Application.Common.Services;
+namespace DnDCharacterManager.Application.Common.Interfaces;
 
 public interface IAuthService
 {

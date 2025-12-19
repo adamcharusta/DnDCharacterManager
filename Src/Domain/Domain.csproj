@@ -4,5 +4,5 @@
     <RootNamespace>DnDCharacterManager.Domain</RootNamespace>
     <AssemblyName>DnDCharacterManager.Domain</AssemblyName>
   </PropertyGroup>
-
+  
 </Project>

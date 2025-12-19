@@ -1,6 +1,7 @@
-using Application.Common.Services;
 using Ardalis.GuardClauses;
+using DnDCharacterManager.Application.Common.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Data.Interceptors;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +28,14 @@ public static class DependencyInjection
             opt.UseSqlServer(connectionString);
         });
 
+        services.AddScoped<ISaveChangesInterceptor, BaseEntityAuditInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, BaseEntitySoftDeleteInterceptor>();
+
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
         services.AddScoped<AppDbContextInitializer>();
+
+        services.AddSingleton(TimeProvider.System);
 
         services
             .AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -40,7 +46,7 @@ public static class DependencyInjection
                 options.Password.RequireDigit = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();

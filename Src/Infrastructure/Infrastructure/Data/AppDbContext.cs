@@ -1,5 +1,6 @@
+using System.Linq.Expressions;
 using System.Reflection;
-using Application.Common.Services;
+using DnDCharacterManager.Application.Common.Interfaces;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,5 +14,31 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        ApplySoftDeleteQueryFilter(builder);
+    }
+
+    private static void ApplySoftDeleteQueryFilter(ModelBuilder modelBuilder)
+    {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (entityType.ClrType == null)
+            {
+                continue;
+            }
+
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                modelBuilder.Entity(entityType.ClrType)
+                    .HasQueryFilter(BuildIsDeletedFilter(entityType.ClrType));
+            }
+        }
+    }
+
+    private static LambdaExpression BuildIsDeletedFilter(Type clrType)
+    {
+        var param = Expression.Parameter(clrType, "e");
+        var prop = Expression.Property(param, nameof(BaseEntity.IsDeleted));
+        var body = Expression.Equal(prop, Expression.Constant(false));
+        return Expression.Lambda(body, param);
     }
 }

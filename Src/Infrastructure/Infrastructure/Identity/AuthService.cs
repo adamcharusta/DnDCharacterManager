@@ -1,5 +1,5 @@
 using Application.Common.Dtos;
-using Application.Common.Services;
+using DnDCharacterManager.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Identity;

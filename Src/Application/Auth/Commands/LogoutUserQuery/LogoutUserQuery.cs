@@ -1,4 +1,4 @@
-using Application.Common.Services;
+using DnDCharacterManager.Application.Common.Interfaces;
 
 namespace DnDCharacterManager.Application.Auth.Commands.LogoutUserQuery;
 

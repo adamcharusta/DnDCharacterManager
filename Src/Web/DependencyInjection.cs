@@ -1,5 +1,7 @@
+using DnDCharacterManager.Application.Common.Interfaces;
 using DnDCharacterManager.Web.Components;
 using DnDCharacterManager.Web.Endpoints;
+using DnDCharacterManager.Web.Infrastructure;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Components;
 using MudBlazor.Services;
@@ -39,6 +41,7 @@ public static class DependencyInjection
         });
 
         services.AddAuthorizationCore();
+        services.AddScoped<ICurrentUser, CurrentUser>();
 
         return services;
     }
