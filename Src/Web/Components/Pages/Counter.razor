@@ -18,8 +18,8 @@
 
     <MudTextField T="string"
                   Label="Email"
-                  @bind-Value="model.Email"
-                  For="@(() => model.Email ?? string.Empty)"
+                  @bind-Value="Email"
+                  For="@(() => Email)"
                   Immediate="true"/>
 
     <MudButton Variant="Variant.Filled"
@@ -32,6 +32,12 @@
 @code {
     private readonly EmailFormModel model = new();
     private int currentCount;
+
+    private string Email
+    {
+        get => model.Email ?? string.Empty;
+        set => model.Email = value;
+    }
 
     private void IncrementCount()
     {
