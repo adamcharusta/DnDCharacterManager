@@ -1,0 +1,117 @@
+name: CI/CD
+
+on:
+    push:
+        branches: ["main"]
+    workflow_dispatch:
+
+concurrency:
+    group: dndcm-prod
+    cancel-in-progress: true
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: "10.0.x"
+
+            - name: Restore
+              run: dotnet restore DnDCharacterManager.sln
+
+            - name: Test
+              run: dotnet test DnDCharacterManager.sln -c Release --no-restore
+
+    build_and_push:
+        needs: test
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to GHCR
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Compute names (lowercase)
+              id: names
+              run: |
+                  OWNER_LC="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+                  REPO_LC="$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')"
+                  echo "owner_lc=$OWNER_LC" >> $GITHUB_OUTPUT
+                  echo "repo_lc=$REPO_LC" >> $GITHUB_OUTPUT
+
+            - name: Build & push web (SHA + latest)
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: ./Dockerfile.web
+                  target: runtime
+                  push: true
+                  tags: |
+                      ghcr.io/${{ steps.names.outputs.owner_lc }}/${{ steps.names.outputs.repo_lc }}-web:${{ github.sha }}
+                      ghcr.io/${{ steps.names.outputs.owner_lc }}/${{ steps.names.outputs.repo_lc }}-web:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            - name: Build & push services (SHA + latest)
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: ./Dockerfile.services
+                  target: runtime
+                  push: true
+                  tags: |
+                      ghcr.io/${{ steps.names.outputs.owner_lc }}/${{ steps.names.outputs.repo_lc }}-services:${{ github.sha }}
+                      ghcr.io/${{ steps.names.outputs.owner_lc }}/${{ steps.names.outputs.repo_lc }}-services:latest
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+    deploy:
+        needs: build_and_push
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy to VPS (update .env -> pull -> up)
+              uses: appleboy/ssh-action@v1.2.0
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  script_stop: true
+                  script: |
+                      set -euo pipefail
+
+                      OWNER_LC="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
+                      REPO_LC="$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')"
+
+                      WEB_IMAGE="ghcr.io/${OWNER_LC}/${REPO_LC}-web:${{ github.sha }}"
+                      WORKERS_IMAGE="ghcr.io/${OWNER_LC}/${REPO_LC}-services:${{ github.sha }}"
+
+                      cd "${{ secrets.VPS_APP_DIR }}"
+
+                      if [ -f .env ]; then
+                        grep -q '^web_image=' .env && sed -i "s|^web_image=.*$|web_image=${WEB_IMAGE}|g" .env || echo "web_image=${WEB_IMAGE}" >> .env
+                        grep -q '^workers_image=' .env && sed -i "s|^workers_image=.*$|workers_image=${WORKERS_IMAGE}|g" .env || echo "workers_image=${WORKERS_IMAGE}" >> .env
+                      else
+                        echo "web_image=${WEB_IMAGE}" > .env
+                        echo "workers_image=${WORKERS_IMAGE}" >> .env
+                      fi
+
+                      docker compose pull web workers
+                      docker compose up -d --remove-orphans
+
+                      docker image prune -f >/dev/null 2>&1 || true
