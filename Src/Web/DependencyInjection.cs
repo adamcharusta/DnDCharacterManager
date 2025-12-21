@@ -53,10 +53,8 @@ public static class DependencyInjection
             app.UseExceptionHandler("/Error", true);
             app.UseHsts();
         }
-        else
-        {
-            await app.InitialiseDatabaseAsync();
-        }
+
+        await app.InitialiseDatabaseAsync();
 
         app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
         app.UseHttpsRedirection();

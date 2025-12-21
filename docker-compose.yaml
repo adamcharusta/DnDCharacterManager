@@ -1,0 +1,124 @@
+services:
+  postgres:
+    image: ${postgres_image}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${postgres_user}
+      POSTGRES_PASSWORD: ${postgres_password}
+      POSTGRES_DB: ${postgres_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db_net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" -h localhost || exit 1',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  pgadmin:
+    image: ${pgadmin_image}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${pgadmin_port}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${pgadmin_email}
+      PGADMIN_DEFAULT_PASSWORD: ${pgadmin_password}
+    networks:
+      - db_net
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  rabbitmq:
+    image: ${rabbitmq_image}
+    restart: unless-stopped
+    ports:
+      - "${rabbitmq_management_port}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${rabbitmq_username}
+      RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rabbitmq_net
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  seq:
+    image: ${seq_image}
+    restart: unless-stopped
+    ports:
+      - "${seq_management_port}:80"
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_PASSWORD: ${seq_password}
+    volumes:
+      - seq_data:/data
+    networks:
+      - seq_net
+
+  workers:
+    image: ${workers_image}
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      seq:
+        condition: service_started
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__RabbitMqConnection: "amqp://${rabbitmq_username}:${rabbitmq_password}@rabbitmq:5672/"
+      RabbitMQ__HostName: "rabbitmq"
+      Serilog__WriteTo__1__Args__serverUrl: "http://seq:5341"
+      SmtpConfig__Host: ${smtp_host}
+      SmtpConfig__Port: ${smtp_port}
+      SmtpConfig__Username: ${smtp_username}
+      SmtpConfig__Password: ${smtp_password}
+    networks:
+      - rabbitmq_net
+      - seq_net
+
+  web:
+    image: ${web_image}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      seq:
+        condition: service_started
+    ports:
+      - "${web_port}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${postgres_db};Username=${postgres_user};Password=${postgres_password};"
+      ConnectionStrings__RabbitMqConnection: "amqp://${rabbitmq_username}:${rabbitmq_password}@rabbitmq:5672/"
+      Serilog__WriteTo__1__Args__serverUrl: "http://seq:5341"
+    networks:
+      - db_net
+      - rabbitmq_net
+      - seq_net
+
+volumes:
+  rabbitmq_data: { }
+  postgres_data: { }
+  seq_data: { }
+  pgadmin_data: { }
+
+networks:
+  db_net:
+  rabbitmq_net:
+  seq_net:

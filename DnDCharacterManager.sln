@@ -8,8 +8,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoultionItems", "SoultionIt
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
-		docker-compose.dev.yaml = docker-compose.dev.yaml
 		global.json = global.json
+		.env = .env
+		.env.example = .env.example
+		docker-compose.override.yml = docker-compose.override.yml
+		docker-compose.yaml = docker-compose.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{DA01C2DC-DC72-4EED-9751-FD64B1C76D36}"

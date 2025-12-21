@@ -1,0 +1,34 @@
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+  
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  
+  seq:
+    ports:
+      - "8081:80"
+      - "5341:5341"
+  
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.web
+      target: runtime
+    image: dndcm-web
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_EnableDiagnostics: "1"
+
+  workers:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.services
+      target: runtime
+    image: dndcm-services
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_EnableDiagnostics: "1"

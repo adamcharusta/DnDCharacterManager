@@ -1,0 +1,31 @@
+# syntax=docker/dockerfile:1.6
+
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY Directory.Build.props Directory.Build.props
+COPY Directory.Packages.props Directory.Packages.props
+COPY global.json global.json
+COPY DnDCharacterManager.sln DnDCharacterManager.sln
+
+COPY Src/Application/Application.csproj Src/Application/Application.csproj
+COPY Src/Contracts/Contracts.csproj Src/Contracts/Contracts.csproj
+COPY Src/Domain/Domain.csproj Src/Domain/Domain.csproj
+COPY Src/Infrastructure/Infrastructure/Infrastructure.csproj Src/Infrastructure/Infrastructure/Infrastructure.csproj
+COPY Src/Infrastructure/Infrastructure.Smtp/Infrastructure.Smtp.csproj Src/Infrastructure/Infrastructure.Smtp/Infrastructure.Smtp.csproj
+COPY Src/Services/Services.csproj Src/Services/Services.csproj
+COPY Src/Web/Web.csproj Src/Web/Web.csproj
+
+RUN dotnet restore Src/Services/Services.csproj
+COPY . .
+
+RUN dotnet publish Src/Services/Services.csproj \
+  -c Release \
+  -o /app/publish \
+  /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS runtime
+WORKDIR /app
+
+COPY --from=build /app/publish ./
+ENTRYPOINT ["dotnet", "DnDCharacterManager.Services.dll"]

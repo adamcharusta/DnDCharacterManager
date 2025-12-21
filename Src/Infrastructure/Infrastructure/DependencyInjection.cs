@@ -19,13 +19,13 @@ public static class DependencyInjection
         var connectionString = configurationManager.GetConnectionString("DefaultConnection");
         Guard.Against.NullOrEmpty(connectionString, "DefaultConnection");
 
-        services.AddHealthChecks().AddSqlServer(connectionString);
+        services.AddHealthChecks().AddNpgSql(connectionString);
 
         services.AddDbContext<AppDbContext>((sp, opt) =>
         {
             opt.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
 
-            opt.UseSqlServer(connectionString);
+            opt.UseNpgsql(connectionString);
         });
 
         services.AddScoped<ISaveChangesInterceptor, BaseEntityAuditInterceptor>();

@@ -9,7 +9,7 @@ namespace DnDCharacterManager.Tests.Integration.Common;
 public abstract class IntegrationTestFactory : IAsyncLifetime
 {
     protected readonly RabbitMqContainer _rabbit = new RabbitMqBuilder().Build();
-    protected readonly MsSqlContainer _sql = new MsSqlBuilder().Build();
+    protected readonly PostgreSqlContainer _sql = new PostgreSqlBuilder().Build();
 
     private ServiceProvider? _provider;
 
